@@ -2,10 +2,11 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es6",
+        "removeComments": true,
         "lib": [
-            "dom"
-        ],
-        "outDir": "dist"
+            "dom",
+            "es2017"
+        ]
     },
     "exclude": [
         "node_modules"
