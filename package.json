@@ -1,0 +1,17 @@
+{
+  "name": "html-editor",
+  "version": "0.0.1",
+  "description": "",
+  "main": "main.ts",
+  "scripts": {
+    "build": "tsc build"
+  },
+  "author": "Plokhikh Alexandr",
+  "license": "ISC",
+  "dependencies": {
+    "rxjs": "^5.5.1"
+  },
+  "devDependencies": {
+    "typescript": "^2.9.2"
+  }
+}
