@@ -44,3 +44,25 @@ function waitHTMLElement(query, queryRepeatDelay = 200) {
         .delay(queryRepeatDelay)
         .switchMap(() => waitHTMLElement(query, queryRepeatDelay));
 }
+function waitFromClick(query) {
+    return waitHTMLElement(query)
+        .do(element => {
+        element.click();
+        console.log(`I AM CLICKED: `, element);
+    });
+}
+function waitFromRemove(query) {
+    return waitHTMLElement(query)
+        .do(element => {
+        element.remove();
+        console.log(`I AM REMOVED: `, element);
+    });
+}
+function waitFromSetValue(query, value) {
+    return waitHTMLElement(query)
+        .do((element) => {
+        element.value = value;
+        element.dispatchEvent(new Event('input', { target: element }));
+        console.log(`I AM SET VALUE: "`, value, '" FROM', element);
+    });
+}

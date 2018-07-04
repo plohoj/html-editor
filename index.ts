@@ -37,13 +37,37 @@ function whenLocation(href: RegExp, flow: Rx.Observable<any>): Rx.Observable<str
     }
     return <Rx.Observable<string>>observable;
 }
-function waitHTMLElement(query, queryRepeatDelay = 200): Rx.Observable<HTMLElement> {
+function waitHTMLElement(query: string, queryRepeatDelay = 200): Rx.Observable<HTMLElement> {
     var element = document.querySelector(query);
     if (element) {
-        return Rx.Observable.of(element);
+        return Rx.Observable.of(<HTMLElement>element);
     }
     return Rx.Observable
         .of(null)
         .delay(queryRepeatDelay)
         .switchMap(() => waitHTMLElement(query, queryRepeatDelay));
+}
+
+function waitFromClick(query: string) {
+    return waitHTMLElement(query)
+        .do(element => {
+            element.click()
+            console.log(`I AM CLICKED: `, element);
+        })
+}
+
+function waitFromRemove(query: string) {
+    return waitHTMLElement(query)
+        .do(element => {
+            element.remove()
+            console.log(`I AM REMOVED: `, element);
+        });
+}
+function waitFromSetValue(query: string, value: string) {
+    return waitHTMLElement(query)
+        .do((element: HTMLInputElement) => {
+            element.value = value;
+            element.dispatchEvent(new Event('input', <EventInit>{target: element}));
+            console.log(`I AM SET VALUE: "`, value, '" FROM', element);
+        });
 }
