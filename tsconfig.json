@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
+        "module": "umd",
         "target": "es6",
-        "removeComments": true,
+        "moduleResolution": "node",
         "lib": [
             "dom",
             "es2017"

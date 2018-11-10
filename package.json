@@ -2,17 +2,17 @@
   "name": "html-editor",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "HTMLEditor",
   "scripts": {
     "build": "tsc"
   },
   "author": "Plokhikh Alexandr",
   "license": "ISC",
   "dependencies": {
-    "rxjs": "^5.5.1"
+    "rxjs": "^6.3.3",
+    "typescript": "^3.1.6"
   },
   "devDependencies": {
-    "tslint": "^5.10.0",
-    "typescript": "^2.9.2"
+    "tslint": "^5.10.0"
   }
 }
