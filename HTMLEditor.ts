@@ -33,6 +33,14 @@ export function waitElement(query: string, repeatDelay = 200): Observable<HTMLEl
         take(1),
     );
 }
+export function waitElements(query: string, repeatDelay = 200): Observable<NodeListOf<HTMLElement>> {
+    return interval(repeatDelay).pipe(
+        startWith(0),
+        map(() => <NodeListOf<HTMLElement>>document.querySelectorAll(query)),
+        filter(elements => elements.length > 0),
+        take(1),
+    );
+}
 
 export function waitFromClick(query: string, repeatDelay?: number) {
     return waitElement(query, repeatDelay).pipe(
