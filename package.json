@@ -2,7 +2,7 @@
   "name": "html-editor",
   "version": "0.0.1",
   "description": "",
-  "main": "HTMLEditor",
+  "main": "html-editor",
   "scripts": {
     "install": "tsc",
     "build": "tsc"

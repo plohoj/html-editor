@@ -1,4 +1,4 @@
 node_modules/
 dist/
 .history/
-HTMLEditor.js
+html-editor.js
