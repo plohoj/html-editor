@@ -1,5 +1,5 @@
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { delay, distinctUntilChanged, filter, map, skip, switchMap, takeUntil, tap, windowCount } from 'rxjs/operators';
+import { BehaviorSubject, interval, Observable } from 'rxjs';
+import { distinctUntilChanged, filter, map, skip, startWith, take, takeUntil, tap, windowCount } from 'rxjs/operators';
 
 export const historyChange = new BehaviorSubject(location.href);
 document.addEventListener('hashchange', () => historyChange.next(location.href));
@@ -25,45 +25,39 @@ export function whenURL(href: RegExp): Observable<Observable<string>> {
     );
 }
 
-export function waitHTMLElement(query: string, queryRepeatDelay = 200): Observable<HTMLElement> {
-    var element = document.querySelector(query);
-    if (element) {
-        return of(<HTMLElement>element);
-    }
-    return of(null)
-        .pipe(
-            delay(queryRepeatDelay),
-            switchMap(() => waitHTMLElement(query, queryRepeatDelay))
-        )
+export function waitElement(query: string, repeatDelay = 200): Observable<HTMLElement> {
+    return interval(repeatDelay).pipe(
+        startWith(0),
+        map(() => <HTMLElement>document.querySelector(query)),
+        filter(element => !!element),
+        take(1),
+    );
 }
 
-export function waitFromClick(query: string) {
-    return waitHTMLElement(query)
-        .pipe(
-            tap(element => {
-                element.click()
-                console.log(`I AM CLICKED: `, element);
-            })
-        )
+export function waitFromClick(query: string, repeatDelay?: number) {
+    return waitElement(query, repeatDelay).pipe(
+        tap(element => {
+            element.click();
+            console.log(`Click: `, element);
+        })
+    );
 }
 
-export function waitFromRemove(query: string) {
-    return waitHTMLElement(query)
-        .pipe(
-            tap(element => {
-                element.remove()
-                console.log(`I AM REMOVED: `, element);
-            })
-        )
+export function waitFromRemove(query: string, repeatDelay?: number) {
+    return waitElement(query, repeatDelay).pipe(
+        tap(element => {
+            element.remove();
+            console.log(`Remove: `, element);
+        })
+    )
 }
 
-export function waitFromSetValue(query: string, value: string) {
-    return waitHTMLElement(query)
-        .pipe(
-            tap((element: HTMLInputElement) => {
-                element.value = value;
-                element.dispatchEvent(new Event('input', <EventInit>{ target: element }));
-                console.log(`I AM SET VALUE: "`, value, '" FROM', element);
-            })
-        );
+export function waitFromSetValue(query: string, value: string, repeatDelay?: number) {
+    return waitElement(query, repeatDelay).pipe(
+        tap((element: HTMLInputElement) => {
+            element.value = value;
+            element.dispatchEvent(new Event('input', <EventInit>{ target: element }));
+            console.log(`Set value: "`, value, '" FROM', element);
+        })
+    );
 }

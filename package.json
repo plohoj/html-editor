@@ -4,6 +4,7 @@
   "description": "",
   "main": "HTMLEditor",
   "scripts": {
+    "install": "tsc",
     "build": "tsc"
   },
   "author": "Plokhikh Alexandr",
