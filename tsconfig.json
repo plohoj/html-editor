@@ -3,6 +3,7 @@
         "module": "umd",
         "target": "es6",
         "moduleResolution": "node",
+        "strictNullChecks": true,
         "lib": [
             "dom",
             "es2017"
