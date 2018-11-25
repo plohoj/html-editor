@@ -18,8 +18,8 @@ function waitElementObservable(query: string, repeatDelay: number) {
  * until it finds the required element or will be unsubscribed.
  * The stream returns the required HTMLElement.
  */
-export function waitElement(query: string, repeatDelay = 200): IOperatorOrObservable<string, HTMLElement> {
-    return (source?: Observable<string>) => {
+export function waitElement(query: string, repeatDelay = 200): IOperatorOrObservable<any, HTMLElement> {
+    return (source?: Observable<any>) => {
         if (source) {
             return source.pipe(mergeMap(() => waitElementObservable(query, repeatDelay)));
         } else {
