@@ -24,7 +24,7 @@ export function whenURL<A, B, C, D, E, F, G, H, I>(href: RegExp, op1: OperatorFu
 export function whenURL(href: RegExp, ...operations: OperatorFunction<any, any>[]): Observable<Observable<string>> | Subscription {
     if (operations.length > 0) {
         return whenURL(href).pipe(
-            tap(flow => flow.pipe.apply(null, operations).subscribe()),
+            tap(flow => flow.pipe.apply(flow, operations).subscribe()),
         ).subscribe()
     }
     return historyChange.pipe(
