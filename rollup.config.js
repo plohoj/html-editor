@@ -9,12 +9,12 @@ const globalLibs = {
 
 /** @type {import('rollup').RollupOptions} */
 module.exports = {
-    input: `./src/html-editor.ts`,
+    input: `./src/index.ts`,
     output: {
         name: `HTMLEditor`,
         globals: globalLibs,
         format: 'esm',
-        file: `dist/html-editor.js`,
+        file: `dist/index.js`,
         sourcemap: true,
     },
     external: Object.keys(globalLibs),

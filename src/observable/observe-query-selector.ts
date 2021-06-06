@@ -1,8 +1,8 @@
 
 import { defer, EMPTY, Observable, of } from "rxjs";
-import { distinctUntilChanged, map, startWith, switchMap, throttleTime } from "rxjs/operators";
+import { distinctUntilChanged, startWith, switchMap, throttleTime } from "rxjs/operators";
 import { mutationObservable } from "./mutation-observable";
-import { IObserveQuerySelectorAllOptions } from "./observe-elements";
+import { IObserveQuerySelectorAllOptions } from "./observe-query-selector-all";
 
 export interface IObserveQuerySelectorOptions<T extends Element = Element> {
     query: string;
@@ -10,7 +10,7 @@ export interface IObserveQuerySelectorOptions<T extends Element = Element> {
     asRemovedWhen?: Observable<Boolean>;
 }
 
-export interface IObserveQuerySelectorChanges<T extends Element = Element> {
+export interface IObserveElementChange<T extends Element = Element> {
     target?: T;
     added?: T;
     removed?: T;
@@ -18,7 +18,7 @@ export interface IObserveQuerySelectorChanges<T extends Element = Element> {
 
 export function observeQuerySelector<T extends Element = Element>(
     options: IObserveQuerySelectorAllOptions,
-): Observable<IObserveQuerySelectorChanges<T>> {
+): Observable<IObserveElementChange<T>> {
     const { query, parent = document.documentElement, asRemovedWhen } = options;
     let targetElement: T | undefined;
 
@@ -27,7 +27,7 @@ export function observeQuerySelector<T extends Element = Element>(
         throttleTime(0, undefined, {leading: true, trailing: true}),
         switchMap(() => {
             const querySelectedElement: T | undefined = parent.querySelector<T>(query) || undefined;
-            const changes: IObserveQuerySelectorChanges<T> = {};
+            const changes: IObserveElementChange<T> = {};
 
             if (querySelectedElement === targetElement) {
                 return EMPTY;
@@ -49,7 +49,7 @@ export function observeQuerySelector<T extends Element = Element>(
             if (!targetElement) {
                 return EMPTY;
             }
-            const changes: IObserveQuerySelectorChanges<T> = {
+            const changes: IObserveElementChange<T> = {
                 removed: targetElement,
             };
             targetElement = undefined;

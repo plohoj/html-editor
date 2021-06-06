@@ -5,7 +5,6 @@
         "moduleResolution": "Node",
         "strict": true,
         "importHelpers": true,
-        "declaration": true
     },
     "exclude": [
         "node_modules",

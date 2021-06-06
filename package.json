@@ -8,6 +8,8 @@
   },
   "author": "Plokhikh Alexandr",
   "license": "ISC",
+  "module": "./dist/index.js",
+  "types": "./src/index.ts",
   "dependencies": {
     "rxjs": "^7.1.0"
   },

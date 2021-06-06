@@ -9,7 +9,7 @@ export interface IObserveQuerySelectorAllOptions<T extends Element = Element> {
     asRemovedWhen?: Observable<Boolean>;
 }
 
-export interface IObserveQuerySelectorAllChanges<T extends Element = Element> {
+export interface IObservedElementsChanges<T extends Element = Element> {
     target: T[];
     added: T[];
     removed: T[];
@@ -17,7 +17,7 @@ export interface IObserveQuerySelectorAllChanges<T extends Element = Element> {
 
 export function observeQuerySelectorAll<T extends Element = Element>(
     options: IObserveQuerySelectorAllOptions,
-): Observable<IObserveQuerySelectorAllChanges<T>> {
+): Observable<IObservedElementsChanges<T>> {
     const { query, parent = document.documentElement, asRemovedWhen } = options;
     const targetElements = new Set<T>();
 
@@ -49,7 +49,7 @@ export function observeQuerySelectorAll<T extends Element = Element>(
                 targetElements.add(addedElement);
             }
 
-            const changes: IObserveQuerySelectorAllChanges<T> = {
+            const changes: IObservedElementsChanges<T> = {
                 target: [...targetElements.values()],
                 added: [...addedElements.values()],
                 removed: [...targetElementsDiff.values()],
@@ -64,7 +64,7 @@ export function observeQuerySelectorAll<T extends Element = Element>(
             if (targetElements.size === 0) {
                 return EMPTY;
             }
-            const changes: IObserveQuerySelectorAllChanges<T> = {
+            const changes: IObservedElementsChanges<T> = {
                 target: [],
                 added: [],
                 removed: [...targetElements.values()],
