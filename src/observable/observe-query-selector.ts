@@ -2,10 +2,8 @@
 import { defer, EMPTY, Observable, of } from "rxjs";
 import { distinctUntilChanged, startWith, switchMap, throttleTime } from "rxjs/operators";
 import { mutationObservable } from "./mutation-observable";
-import { IObserveQuerySelectorAllOptions } from "./observe-query-selector-all";
 
 export interface IObserveQuerySelectorOptions<T extends Element = Element> {
-    query: string;
     parent?: T;
     asRemovedWhen?: Observable<Boolean>;
 }
@@ -17,13 +15,14 @@ export interface IObserveElementChange<T extends Element = Element> {
 }
 
 export function observeQuerySelector<T extends Element = Element>(
-    options: IObserveQuerySelectorAllOptions,
+    query: string,
+    options: IObserveQuerySelectorOptions = {},
 ): Observable<IObserveElementChange<T>> {
-    const { query, parent = document.documentElement, asRemovedWhen } = options;
+    const { parent = document.documentElement, asRemovedWhen } = options;
     let targetElement: T | undefined;
 
     const observeQuerySelector$ = mutationObservable(parent, {subtree: true, childList: true}).pipe(
-        startWith(),
+        startWith(null),
         throttleTime(0, undefined, {leading: true, trailing: true}),
         switchMap(() => {
             const querySelectedElement: T | undefined = parent.querySelector<T>(query) || undefined;

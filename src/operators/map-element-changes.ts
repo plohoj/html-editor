@@ -17,7 +17,7 @@ function assuredArray<T>(values?: T | T[]): T[] {
     return [];
 }
 
-export function mapElementChanges<T extends Element, O extends ObservableInput<any>>(
+export function mergeMapElementChanges<T extends Element, O extends ObservableInput<any>>(
     project: (element: T) => O,
     options?: IMapElementChangeOptions,
 ): OperatorFunction<

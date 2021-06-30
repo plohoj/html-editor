@@ -15,9 +15,9 @@ function injectPushStateHandler(): void {
 }
 
 /**
- * Emit new location when the URL is changes
+ * Emit new location url when the URL is changes
  */
-export const historyChange$ = new Observable<string>(subscriber$ => {
+export const urlChange$ = new Observable<string>(subscriber$ => {
     function updateURL(): void {
         subscriber$.next(location.href)
     }    
