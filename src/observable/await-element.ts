@@ -12,7 +12,7 @@ export function awaitRandomElement<T extends Element = Element>(query: string): 
             take(1),
         );
 }
-
+// TODO await removing element
 export function awaitElement<T extends Element = Element>(query: string): Observable<T> {
     return observeQuerySelector<T>(query)
         .pipe(

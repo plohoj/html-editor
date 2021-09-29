@@ -1,6 +1,10 @@
+export { awaitElement, awaitRandomElement } from "./observable/await-element";
+export { observeElementMutation } from "./observable/observe-mutation";
 export { observeQuerySelector } from "./observable/observe-query-selector";
 export { observeQuerySelectorAll } from "./observable/observe-query-selector-all";
 export { urlChange$ } from "./observable/url-change";
-export { awaitElement, awaitRandomElement } from "./observable/await-element";
-export { mergeMapElementChanges } from "./operators/map-element-changes";
-export { clickElement, removeElement, setValueElement } from "./operators/utilities";
+export { clickElement } from "./operators/click-element";
+export { mergeMapElementChanges } from "./operators/merge-map-element-changes";
+export { removeElement } from "./operators/remove-element";
+export { setInputValue } from "./operators/set-input-value";
+export { urlChangeMergeMapToggle } from "./operators/url-change-merge-map-toggle";

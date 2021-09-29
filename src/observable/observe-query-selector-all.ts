@@ -1,7 +1,7 @@
 
 import { defer, EMPTY, Observable, of } from "rxjs";
 import { distinctUntilChanged, mergeMap, startWith, switchMap, throttleTime } from "rxjs/operators";
-import { mutationObservable } from "./mutation-observable";
+import { observeElementMutation } from "./observe-mutation";
 import { IObserveQuerySelectorOptions } from "./observe-query-selector";
 
 export interface IObservedElementsChanges<T extends Element = Element> {
@@ -17,7 +17,7 @@ export function observeQuerySelectorAll<T extends Element = Element>(
     const { parent = document.documentElement, asRemovedWhen } = options;
     const targetElements = new Set<T>();
 
-    let observeQuerySelectorAll$ = mutationObservable(parent, {subtree: true, childList: true}).pipe(
+    let observeQuerySelectorAll$ = observeElementMutation(parent, {subtree: true, childList: true}).pipe(
         startWith(null),
         throttleTime(0, undefined, {leading: true, trailing: true}),
         mergeMap(() => {
