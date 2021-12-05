@@ -10,6 +10,7 @@ export interface IObservedElementsChanges<T extends Element = Element> {
     removed: T[];
 }
 
+// TODO custom MutationObserver config
 export function observeQuerySelectorAll<T extends Element = Element>(
     query: string,
     options: IObserveQuerySelectorOptions = {},
@@ -26,6 +27,13 @@ export function observeQuerySelectorAll<T extends Element = Element>(
             const querySelectedElements = new Set(parent.querySelectorAll<T>(query));
 
             for (const querySelectedElement of querySelectedElements) {
+                if (options.has && !querySelectedElement.querySelector(options.has)) {
+                    continue;
+                }
+                if (options.filter && !options.filter(querySelectedElement)) {
+                    continue;
+                }
+
                 if (targetElementsDiff.has(querySelectedElement)) {
                     targetElementsDiff.delete(querySelectedElement);
                 } else {

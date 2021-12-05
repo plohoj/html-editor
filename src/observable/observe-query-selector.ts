@@ -5,6 +5,8 @@ import { observeElementMutation } from "./observe-mutation";
 
 export interface IObserveQuerySelectorOptions<T extends Element = Element> {
     parent?: T;
+    has?: string;
+    filter?: (element: T) => boolean;
     asRemovedWhen?: Observable<Boolean>;
 }
 
@@ -26,20 +28,33 @@ export function observeQuerySelector<T extends Element = Element>(
         startWith(null),
         throttleTime(0, undefined, {leading: true, trailing: true}),
         switchMap(() => {
-            const querySelectedElement: T | undefined = parent.querySelector<T>(query) || undefined;
+            const querySelectedElements: NodeListOf<T> = parent.querySelectorAll<T>(query);
+            let filteredSelectedElement: T | undefined;
             const changes: IObserveElementChange<T> = {};
 
-            if (querySelectedElement === targetElement) {
+            for (const querySelectedElement of querySelectedElements) {
+                if (options.has && !querySelectedElement.querySelector(options.has)) {
+                    continue;
+                }
+                if (options.filter && !options.filter(querySelectedElement)) {
+                    continue;
+                }
+
+                filteredSelectedElement = querySelectedElement;
+                break;
+            }
+
+            if (filteredSelectedElement === targetElement) {
                 return EMPTY;
             }
             if (targetElement) {
                 changes.removed = targetElement;
             }
-            if (querySelectedElement) {
-                changes.added = querySelectedElement;
+            if (filteredSelectedElement) {
+                changes.added = filteredSelectedElement;
             }
-            changes.target = querySelectedElement;
-            targetElement = querySelectedElement;
+            changes.target = filteredSelectedElement;
+            targetElement = filteredSelectedElement;
             return of(changes);
         }),
     );
