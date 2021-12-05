@@ -4,6 +4,14 @@ import { IObserveElementChange } from "../observable/observe-query-selector";
 import { IObservedElementsChanges } from "../observable/observe-query-selector-all";
 
 export interface IMapElementChangeOptions {
+    /**
+     * If the `isTakeUntilRemoved` parameter is equal to the `true` value,
+     * then each thread will be interrupted after the element is removed.
+     * Only the stream that belongs to the deleted element is interrupted.
+     * 
+     * If the `isTakeUntilRemoved` parameter is equal to the `false` value,
+     * then the converted streams will not be interrupted.
+     */
     isTakeUntilRemoved?: boolean;
 }
 
@@ -17,6 +25,7 @@ function assuredArray<T>(values?: T | T[]): T[] {
     return [];
 }
 
+/** Conversion operator to a new stream for each new added element */
 export function mergeMapAddedElements<T extends Element, O extends ObservableInput<any>>(
     project: (element: T) => O,
     options?: IMapElementChangeOptions,

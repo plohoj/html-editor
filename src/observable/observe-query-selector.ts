@@ -4,19 +4,36 @@ import { distinctUntilChanged, mergeMap, switchMap, throttleTime } from "rxjs/op
 import { observeElementMutation } from "./observe-mutation";
 
 export interface IObserveQuerySelectorOptions<T extends Element = Element> {
-    /** @default document.documentElement */
+    /**
+     * The parent element within which changes are tracked.
+     * @default document.documentElement
+     */
     parent?: T;
+    /** Checks if the added element has any child elements that match the selectors. */
     has?: string;
+    /** Custom validation of each item */
     filter?: (element: T) => boolean;
+    /**
+     * When the `asRemovedWhen` parameter emits a` true` value,
+     * all currently added items will be returned as removed.
+     * When the `asRemovedWhen` parameter emits a `false` value,
+     * the search will resume and all items will again be returned as added.
+     */
     asRemovedWhen?: Observable<Boolean>;
 }
 
 export interface IObserveElementChange<T extends Element = Element> {
+    /** Element that satisfy the filtering condition. */
     target?: T;
+    /** New element that have been added since the last emit. */
     added?: T;
+    /** Element that have been removed since the last emit. */
     removed?: T;
 }
 
+/**
+ * Returns change (addition and deletion) of element that match selectors, like an Rx stream.
+ */
 export function observeQuerySelector<T extends Element = Element>(
     query: string,
     options: IObserveQuerySelectorOptions = {},

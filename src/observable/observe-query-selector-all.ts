@@ -5,11 +5,15 @@ import { observeElementMutation } from "./observe-mutation";
 import { IObserveQuerySelectorOptions } from "./observe-query-selector";
 
 export interface IObservedElementsChanges<T extends Element = Element> {
+    /** All elements that satisfy the filtering condition. */
     target: T[];
+    /** New elements that have been added since the last emit. */
     added: T[];
+    /** Elements that have been removed since the last emit. */
     removed: T[];
 }
 
+/** Returns changes (additions and deletions) of elements that match selectors, like an Rx stream. */
 export function observeQuerySelectorAll<T extends Element = Element>(
     query: string,
     options: IObserveQuerySelectorOptions = {},

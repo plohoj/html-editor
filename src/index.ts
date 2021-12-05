@@ -9,6 +9,7 @@ export { clickElement } from "./operators/click-element";
 export { mergeMapAddedElements } from "./operators/merge-map-added-elements";
 export { removeElement } from "./operators/remove-element";
 export { setInputValue } from "./operators/set-input-value";
-export { urlChangeMergeMapToggle } from "./operators/url-change-merge-map-toggle";
+export { mergeMapStringToggle } from "./operators/merge-map-string-toggle";
 // Utils
 export { findRecursively, findRecursivelyPropertyName, RecursivelyFindMather } from "./utils/find-recursively";
+export { randomFromArray } from "./utils/random-from-array";
