@@ -2,24 +2,19 @@
   "name": "html-editor",
   "version": "0.0.4",
   "description": "",
-  "main": "html-editor",
   "scripts": {
-    "install": "tsc",
-    "build": "tsc",
-    "build-umd": "gulp build-umd",
-    "build-umd-min": "gulp build-umd-min"
+    "build": "rollup --config"
   },
   "author": "Plokhikh Alexandr",
   "license": "ISC",
+  "module": "./dist/index.js",
+  "types": "./src/index.ts",
   "dependencies": {
-    "rxjs": "^6.3.3"
+    "rxjs": "^7.4.0"
   },
   "devDependencies": {
-    "gulp": "^4.0.0",
-    "rollup": "^0.67.3",
-    "rollup-plugin-babel-minify": "^6.2.0",
-    "rollup-plugin-typescript2": "^0.18.0",
-    "tslint": "^5.10.0",
-    "typescript": "^3.1.6"
+    "rollup": "^2.60.2",
+    "rollup-plugin-typescript2": "^0.31.1",
+    "typescript": "^4.5.2"
   }
 }

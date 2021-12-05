@@ -1,15 +1,14 @@
 {
     "compilerOptions": {
-        "module": "umd",
-        "target": "esnext",
-        "moduleResolution": "node",
-        "strictNullChecks": true,
-        "lib": [
-            "dom",
-            "es2017"
-        ]
+        "module": "ESNext",
+        "target": "ES2015",
+        "moduleResolution": "Node",
+        "strict": true,
+        "importHelpers": true,
     },
     "exclude": [
-        "node_modules"
-    ]
+        "node_modules",
+        ".history/",
+        "dist/"
+    ],
 }

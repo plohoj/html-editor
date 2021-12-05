@@ -1,61 +1,123 @@
-html-editor it's a tool for helping modification html elements
-# How use
-## `whenURL(href: RegExp): Observable<Observable<string>>`</br>`whenURL(href: RegExp, ...operations: OperatorFunction[]):`</br>&nbsp;&nbsp;&nbsp;&nbsp;`Subscription`
-This method emits a stream inside stream that expects a _URL_ transition. That thread will be automatically canceled if the transition to the _URL_ is not satisfied with the _RegExp_ conditions. The stream emits a string parameter - _URL_.
-#### Usage example
-``` ts
-whenURL(/http:\/\/localhost\/example/).pipe(tap(flow => flow
-    .subscribe(
-        url => console.log('The transition to', {url}),
-        null,
-        () => console.log('Leave RegExp url'),
-    )),
-).subscribe();
-```
-or
-``` ts
-whenURL(/http:\/\/localhost\/example/,
-    tap(url => console.log('The transition to', {url})),
-    waitElement('li.library .book.green a#book1'),
-    delay(100), // RxJS operator
-    tap(element => console.log('Find element', {element})),
-)
-```
-## `waitElement(query: string, repeatDelay = 200):`<br/>&nbsp;&nbsp;&nbsp;&nbsp;`IOperatorOrObservable<any, HTMLElement>`
-This method emits a stream that will infinitely check for the existence of an _HTMLElement_, until it finds the required element or will be unsubscribed. The stream returns the required _HTMLElement_.
-#### Usage example
-``` ts
-whenURL(/http:\/\/localhost\/example/).pipe(tap(flow => flow
-    .pipe(
-        waitElement('li.library .book.green a#book1'),
-        delay(100), // RxJS operator
-        tap(element => console.log('Find element', {element}))
-    ).subscribe())
-).subscribe();
-```
-or
-``` ts
-waitElement('li.library .book.green a#book1')().subscribe(
-    element => console.log('Find element', {element}),
-    null,
-    () => console.log('Emitted immediately after finding'),
-);
-```
-## `elementActionBuilder(callback: (element: HTMLElement) => any):`<br/>&nbsp;&nbsp;&nbsp;&nbsp;`() => MonoTypeOperatorFunction<HTMLElement>`
-A tool for quickly building your own _RxJS_ operators intended to work with _HTMLElement_ variables. Usually used in conjunction with _waitElement_
-#### Usage example
-``` ts
-const logging = elementActionBuilder(element =>
-    console.log('Find element', element));
+# HTML editor
+**`html-editor`** it's a tool for helping modification html elements
 
-waitElement('li.library .book.green a#book1')().pipe(
-    delay(100), // RxJS operator
-    logging(), // print "Find element {...}"
-)
-```
-Also in the library already implemented quick operators, such as:
+## Table of contents
+* [Observables](#observables)
+    * [observeElementMutation](#observe-element-mutation)
+    * [observeQuerySelector](#observe-query-selector)
+    * [observeQuerySelectorAll](#observe-query-selector-all)
+    * [awaitElement](#await-element)
+    * [awaitRandomElement](#await-random-element)
+    * [urlChange$](#url-change)
+* [Operators](#operators)
+    * [mergeMapAddedElements](#merge-map-added-elements)
+    * [mergeMapStringToggle](#merge-map-string-toggle)
+
+# <a name="observables"></a> Observables
+## <a name="observe-element-mutation"></a> `observeElementMutation`
+Converts the callback of the MutationObserver class to an Rx event stream.
+
+Example:
 ```ts
-clickElement() : MonoTypeOperatorFunction<HTMLElement>
-removeElement() : MonoTypeOperatorFunction<HTMLElement>
-setValueElement(value: any) : MonoTypeOperatorFunction<HTMLElement>
+observeElementMutation(
+    document.querySelector('#my-element'),
+    { attributeFilter: ['data-my-data'] },
+).subscribe(console.log);
+```
+
+## <a name="observe-query-selector"></a> `observeQuerySelector`
+Returns change (addition and deletion) of element that match selectors, like an Rx stream.
+
+Example:
+```ts
+observeQuerySelector(
+    '.my-child',
+    {
+        parent: document.querySelector('#my-parent'),
+        has: '.my-sub-child',
+        filter: element => element.classList.contains('.my-child-modifier'),
+    }
+).subscribe(console.log);
+```
+Example log:
+```ts
+{added: Element, target: Element, removed: undefined};
+{added: undefined, target: undefined, removed: Element};
+```
+
+## <a name="observe-query-selector-all"></a> `observeQuerySelectorAll`
+Returns changes (additions and deletions) of elements that match selectors, like an Rx stream.
+
+Example:
+```ts
+observeQuerySelectorAll(
+    '.my-child',
+    {
+        parent: document.querySelector('#my-parent'),
+        has: '.my-sub-child',
+        filter: element => element.classList.contains('.my-child-modifier'),
+    }
+).subscribe(console.log);
+```
+Example log:
+```ts
+{added: [Element], target: [Element, Element], removed: []};
+{added: [], target: [Element], removed: [Element]};
+```
+
+## <a name="await-element"></a> `awaitElement`
+Awaiting only one element to match the selector and returns it as an Rx stream. The stream ends immediately after one element is found / added.
+
+Example:
+```ts
+awaitElement('#my-element')
+    .subscribe(console.log);
+```
+
+## <a name="await-random-element"></a> `awaitRandomElement`
+Awaiting Expects at least one element to match the selector and returns it as an Rx stream. If there are more than 1 elements, it will return a random one. The stream ends immediately after the elements are found / added.
+
+Example:
+```ts
+awaitRandomElement('.my-element')
+    .subscribe(console.log);
+```
+
+## <a name="url-change"></a> `urlChange$`
+Emit new location url when the URL is changes
+
+Example:
+```ts
+urlChange$.subscribe(console.log);
+```
+
+# <a name="operators"></a> Operators
+
+## <a name="merge-map-added-elements"></a> `mergeMapAddedElements`
+Conversion operator to a new stream for each new added element
+
+Example:
+```ts
+observeQuerySelectorAll('.my-button')
+    .pipe(
+        mergeMapAddedElements(
+            element => fromEvent(element, 'click'),
+            { isTakeUntilRemoved: true }
+        )
+    ).subscribe(console.log);
+```
+
+## <a name="merge-map-string-toggle"></a> `mergeMapStringToggle`
+The operator creates a separate stream when the source string is validated.
+
+Example:
+```ts
+urlChange$
+    .pipe(
+        mergeMapStringToggle(
+            /my-url-segment/,
+            () => observeQuerySelectorAll('.my-element'),
+            { isTakeUntilToggle: true },
+        )
+    ).subscribe(console.log);
 ```
