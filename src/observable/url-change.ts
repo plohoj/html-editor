@@ -5,13 +5,14 @@ let pushStateSubscriber$: Subscriber<string> | undefined;
 let isPushStateWasInjected = false;
 
 function injectPushStateHandler(): void {
-    if (!isPushStateWasInjected) {
-        const pushState = history.pushState;
-        history.pushState = function (...args) {
-            pushState.apply(history, args);
-            pushStateSubscriber$?.next(location.href);
-        };
+    if (isPushStateWasInjected) {
+        return;
     }
+    const pushState = history.pushState;
+    history.pushState = function (...args) {
+        pushState.apply(this, args);
+        pushStateSubscriber$?.next(location.href);
+    };
 }
 
 /**

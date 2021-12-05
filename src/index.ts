@@ -4,7 +4,7 @@ export { observeQuerySelector } from "./observable/observe-query-selector";
 export { observeQuerySelectorAll } from "./observable/observe-query-selector-all";
 export { urlChange$ } from "./observable/url-change";
 export { clickElement } from "./operators/click-element";
-export { mergeMapElementChanges } from "./operators/merge-map-element-changes";
+export { mergeMapAddedElements } from "./operators/merge-map-added-elements";
 export { removeElement } from "./operators/remove-element";
 export { setInputValue } from "./operators/set-input-value";
 export { urlChangeMergeMapToggle } from "./operators/url-change-merge-map-toggle";
