@@ -7,9 +7,9 @@ export { urlChange$ } from "./observable/url-change";
 // Operators
 export { clickElement } from "./operators/click-element";
 export { mergeMapAddedElements } from "./operators/merge-map-added-elements";
+export { mergeMapStringToggle } from "./operators/merge-map-string-toggle";
 export { removeElement } from "./operators/remove-element";
 export { setInputValue } from "./operators/set-input-value";
-export { mergeMapStringToggle } from "./operators/merge-map-string-toggle";
 // Utils
-export { findRecursively, findRecursivelyPropertyName, RecursivelyFindMather } from "./utils/find-recursively";
+export { findRecursively, FindRecursivelyContinue, FindRecursivelyMatcher, FindRecursivelyResult, IFindRecursivelyMatherOptions, IFindRecursivelyOptions } from "./utils/find-recursively";
 export { randomFromArray } from "./utils/random-from-array";
