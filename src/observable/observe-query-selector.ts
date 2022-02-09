@@ -1,18 +1,22 @@
 
 import { concat, defer, EMPTY, Observable, of } from "rxjs";
 import { distinctUntilChanged, mergeMap, switchMap, throttleTime } from "rxjs/operators";
+import { trueStub } from '../utils/stubs';
 import { observeElementMutation } from "./observe-mutation";
 
-export interface IObserveQuerySelectorOptions<T extends Element = Element> {
+export interface IObserveQuerySelectorBaseOptions<T extends Element = Element> {
     /**
      * The parent element within which changes are tracked.
      * @default document.documentElement
      */
-    parent?: T;
+    parent?: Element;
     /** Checks if the added element has any child elements that match the selectors. */
     has?: string;
     /** Custom validation of each item */
     filter?: (element: T) => boolean;
+}
+
+export interface IObserveQuerySelectorOptions<T extends Element = Element> extends IObserveQuerySelectorBaseOptions<T> {
     /**
      * When the `asRemovedWhen` parameter emits a` true` value,
      * all currently added items will be returned as removed.
@@ -36,9 +40,13 @@ export interface IObserveElementChange<T extends Element = Element> {
  */
 export function observeQuerySelector<T extends Element = Element>(
     query: string,
-    options: IObserveQuerySelectorOptions = {},
+    options: IObserveQuerySelectorOptions<T> = {},
 ): Observable<IObserveElementChange<T>> {
-    const { parent = document.documentElement, asRemovedWhen } = options;
+    const {
+        parent = document.documentElement,
+        asRemovedWhen,
+        filter = trueStub,
+    } = options;
     let targetElement: T | undefined;
 
     function checkChanges(): Observable<IObserveElementChange<T>> {
@@ -50,7 +58,7 @@ export function observeQuerySelector<T extends Element = Element>(
             if (options.has && !querySelectedElement.querySelector(options.has)) {
                 continue;
             }
-            if (options.filter && !options.filter(querySelectedElement)) {
+            if (!filter(querySelectedElement)) {
                 continue;
             }
 
