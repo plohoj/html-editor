@@ -18,11 +18,11 @@ export function mergeMapStringToggle<O extends ObservableInput<any>>(
     options?: IMergeMapStringToggleOptions,
 ): OperatorFunction<string, ObservedValueOf<O>> {
     const mapConditionFn = typeof condition === 'function' ? condition : (url: string) => condition.test(url);
-    let urlMatchToggler: (isUrlMatch: Boolean) => Observable<ObservedValueOf<O>>;
+    let urlMatchToggler: (isUrlMatch: boolean) => Observable<ObservedValueOf<O>>;
     if (typeof project === 'function') {
-        urlMatchToggler = (isUrlMatch: Boolean) => isUrlMatch ? from(project()) : EMPTY
+        urlMatchToggler = (isUrlMatch: boolean) => isUrlMatch ? from(project()) : EMPTY;
     } else {
-        urlMatchToggler = (isUrlMatch: Boolean) => isUrlMatch ? from(project) : EMPTY
+        urlMatchToggler = (isUrlMatch: boolean) => isUrlMatch ? from(project) : EMPTY;
     }
     const mergeOperator = options?.isTakeUntilToggle
         ? switchMap(urlMatchToggler)

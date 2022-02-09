@@ -36,11 +36,11 @@ export function mergeMapAddedElements<T extends Element, O extends ObservableInp
     if (!options?.isTakeUntilRemoved) {
         return source$ => source$.pipe(
             mergeMap(changes => {
-                let added = assuredArray(changes.added);
+                const added = assuredArray(changes.added);
                 if (added.length === 0) {
                     return EMPTY;
                 }
-                let addedObservers = added.map(project);
+                const addedObservers = added.map(project);
                 return merge(...addedObservers);
             })
         );
@@ -48,12 +48,12 @@ export function mergeMapAddedElements<T extends Element, O extends ObservableInp
     return source$ => source$.pipe(
         connect(connectedSource$ => connectedSource$.pipe(
             mergeMap(changes => {
-                let added = assuredArray(changes.added);
+                const added = assuredArray(changes.added);
                 if (added.length === 0) {
                     return EMPTY;
                 }
                 
-                let addedObservers = added.map(addedElement => 
+                const addedObservers = added.map(addedElement => 
                     from(
                         project(addedElement)
                     ).pipe(

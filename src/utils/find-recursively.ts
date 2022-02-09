@@ -1,3 +1,5 @@
+import { falseStub, trueStub } from './stubs';
+
 export interface IFindRecursivelyMatherOptions {
     field?: unknown;
     value: unknown;
@@ -51,13 +53,7 @@ export interface IFindRecursivelyOptions {
     continueAfterGetterError?: (error: unknown) => boolean;
 }
 
-function trueStub(): true {
-    return true;
-}
 
-function falseStub(): false {
-    return false;
-}
 
 /** Recursive search on entity fields */
 export function findRecursively(obj: unknown, options: IFindRecursivelyOptions = {}): FindRecursivelyResult {
@@ -92,6 +88,8 @@ export function findRecursively(obj: unknown, options: IFindRecursivelyOptions =
         if (!isPrimitiveOrFunction) {
             const seenPathsForValue: Array<string | undefined> | undefined = seen.get(options.value);
             if (seenPathsForValue) {
+                // TODO windows or document
+                // TODO List of visited objects, but with the wrong path
                 const hasCircularPath = seenPathsForValue.some(path => options.path && path?.includes(options.path));
                 if (hasCircularPath) {
                     return;

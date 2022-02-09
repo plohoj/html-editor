@@ -1,6 +1,7 @@
 
 import { concat, defer, EMPTY, Observable, of } from "rxjs";
 import { distinctUntilChanged, mergeMap, switchMap, throttleTime } from "rxjs/operators";
+import { trueStub } from '../utils/stubs';
 import { observeElementMutation } from "./observe-mutation";
 import { IObserveQuerySelectorOptions } from "./observe-query-selector";
 
@@ -16,9 +17,13 @@ export interface IObservedElementsChanges<T extends Element = Element> {
 /** Returns changes (additions and deletions) of elements that match selectors, like an Rx stream. */
 export function observeQuerySelectorAll<T extends Element = Element>(
     query: string,
-    options: IObserveQuerySelectorOptions = {},
+    options: IObserveQuerySelectorOptions<T> = {},
 ): Observable<IObservedElementsChanges<T>> {
-    const { parent = document.documentElement, asRemovedWhen } = options;
+    const {
+        parent = document.documentElement,
+        asRemovedWhen,
+        filter = trueStub,
+    } = options;
     const targetElements = new Set<T>();
 
     function checkChanges(): Observable<IObservedElementsChanges<T>> {
@@ -30,7 +35,7 @@ export function observeQuerySelectorAll<T extends Element = Element>(
             if (options.has && !querySelectedElement.querySelector(options.has)) {
                 continue;
             }
-            if (options.filter && !options.filter(querySelectedElement)) {
+            if (!filter(querySelectedElement)) {
                 continue;
             }
 
