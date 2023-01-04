@@ -1,10 +1,10 @@
-import { MonoTypeOperatorFunction, pipe } from "rxjs";
+import { MonoTypeOperatorFunction } from "rxjs";
 import { tap } from "rxjs/operators";
 
 function setInputValueImmediately(element: HTMLInputElement, value: string): void {
     element.value = value;
     element.focus();
-    element.dispatchEvent(new Event('input', <EventInit>{ target: element }));
+    element.dispatchEvent(new Event('input'));
     console.log(`Set value: `, { element, value });
 }
 
@@ -14,9 +14,7 @@ export function setInputValue(
     elementOrValue: HTMLInputElement | string, value?: string
 ): MonoTypeOperatorFunction<HTMLInputElement> | void {
     if (typeof elementOrValue === 'string') {
-        return pipe(
-            tap((element: HTMLInputElement) => setInputValueImmediately(element, elementOrValue))
-        );
+        return tap((element: HTMLInputElement) => setInputValueImmediately(element, elementOrValue));
     } else {
         setInputValueImmediately(elementOrValue, value!);
     }

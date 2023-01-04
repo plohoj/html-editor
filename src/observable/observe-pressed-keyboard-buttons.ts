@@ -19,11 +19,10 @@ export function observePressedKeyboardButtons(
         filter((event: KeyboardEvent) => !set.has(event.key)),
         tap((event: KeyboardEvent) => set.add(event.key)),
     )
-    const keyRemove$ = fromEvent(target, 'keyup')
-        .pipe(
-            filter((event: KeyboardEvent) => set.has(event.key)),
-            tap((event: KeyboardEvent) => set.delete(event.key)),
-        );
+    const keyRemove$ = fromEvent(target, 'keyup').pipe(
+        filter((event: KeyboardEvent) => set.has(event.key)),
+        tap((event: KeyboardEvent) => set.delete(event.key)),
+    );
     return merge(
         addKey$,
         keyRemove$,

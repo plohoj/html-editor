@@ -3,7 +3,7 @@ import { falseStub, trueStub } from './stubs';
 export interface IFindRecursivelyMatherOptions {
     field?: unknown;
     value: unknown;
-    path?: string;
+    path: string;
     depth: number;
 }
 
@@ -58,11 +58,12 @@ export interface IFindRecursivelyOptions {
 /** Recursive search on entity fields */
 export function findRecursively(obj: unknown, options: IFindRecursivelyOptions = {}): FindRecursivelyResult {
     /** {value: path[]} */
-    const seen = new Map<unknown, Array<string | undefined>>();
+    const seen = new Map<unknown, Array<string>>();
     const searched: Record<string, unknown> = {};
     const needSeen = new Set<IFindRecursivelyMatherOptions>([{
         value: obj,
         depth: 0,
+        path: '',
     }]);
     const {
         matcher = falseStub,
@@ -86,11 +87,11 @@ export function findRecursively(obj: unknown, options: IFindRecursivelyOptions =
         }
         const isPrimitiveOrFunction = options.value === null || typeof options.value !== 'object';
         if (!isPrimitiveOrFunction) {
-            const seenPathsForValue: Array<string | undefined> | undefined = seen.get(options.value);
+            const seenPathsForValue: Array<string> | undefined = seen.get(options.value);
             if (seenPathsForValue) {
                 // TODO windows or document
                 // TODO List of visited objects, but with the wrong path
-                const hasCircularPath = seenPathsForValue.some(path => options.path && path?.includes(options.path));
+                const hasCircularPath = seenPathsForValue.some(path => options.path.includes(path));
                 if (hasCircularPath) {
                     return;
                 }
@@ -145,16 +146,16 @@ export function findRecursively(obj: unknown, options: IFindRecursivelyOptions =
         if (value instanceof Array) {
             iterateArrayLike(
                 (value as unknown[]).entries(),
-                (fieldIndex) => `${path || ''}[${fieldIndex}]`,
+                (fieldIndex) => `${path}[${fieldIndex}]`,
                 incrementalDepth,
             );
-        } if (value instanceof Map) {
+        } else if (value instanceof Map) {
             iterateArrayLike(
                 (value as Map<unknown, unknown>).entries(),
-                (fieldIndex) => `${path || ''}{${fieldIndex}}`,
+                (fieldIndex) => `${path}{${fieldIndex}}`,
                 incrementalDepth,
             );
-        } if (value instanceof Set) {
+        } else if (value instanceof Set) {
             for (const [fieldIndex, fieldValue] of ([...value] as unknown[]).entries()) {
                 checkForNeedSeen({
                     field: fieldValue,
