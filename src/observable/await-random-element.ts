@@ -13,11 +13,10 @@ export function awaitRandomElement<T extends Element = Element>(
     query: string,
     options: IAwaitElementOptions<T> = {},
 ): Observable<T> {
-    return observeQuerySelectorAll<T>(query, options)
-        .pipe(
-            debounceTime(options.debounceTime || 0, options.debounceScheduler),
-            filter(changes => changes.target.length > 0),
-            map(changes => randomFromArray(changes.target)),
-            take(1)
-        );
+    return observeQuerySelectorAll<T>(query, options).pipe(
+        debounceTime(options.debounceTime || 0, options.debounceScheduler),
+        filter(changes => changes.target.length > 0),
+        map(changes => randomFromArray(changes.target)),
+        take(1)
+    );
 }

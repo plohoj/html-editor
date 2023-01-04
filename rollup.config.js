@@ -8,7 +8,7 @@ const globalLibs = {
 };
 
 /** @type {import('rollup').RollupOptions} */
-module.exports = {
+export default {
     input: `./src/index.ts`,
     output: {
         name: `HTMLEditor`,

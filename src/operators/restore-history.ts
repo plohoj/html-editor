@@ -1,4 +1,4 @@
-import { concat, defer, EMPTY, ignoreElements, merge, MonoTypeOperatorFunction, NEVER, Observable, ObservableInput, of, share, take, takeUntil, tap } from 'rxjs';
+import { concat, defer, EMPTY, ignoreElements, merge, MonoTypeOperatorFunction, NEVER, Observable, ObservableInput, of, share, takeUntil, tap } from 'rxjs';
 
 export interface IRestoredHistoryOption<T = unknown> {
     getStory(): T | undefined;
