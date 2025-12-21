@@ -14,7 +14,7 @@ export function awaitElements<T extends Element = Element>(
     return observeQuerySelectorAll<T>(query, options).pipe(
         debounceTime(options.debounceTime || 0, options.debounceScheduler),
         filter(changes => !!changes.target),
-        map(changes => changes.target!),
+        map(changes => changes.target),
         take(1),
     );
 }

@@ -2,7 +2,9 @@ import { concat, defer, EMPTY, ignoreElements, merge, MonoTypeOperatorFunction, 
 
 export interface IRestoredHistoryOption<T = unknown> {
     getStory(): T | undefined;
+    /** Setting a new value that was thrown by the thread */
     setStory(value: T): void;
+    /** Called if {@link cancelRestore} threw an event */
     removeStory(): void;
     cancelRestore?: () => ObservableInput<unknown>;
 };

@@ -3,7 +3,7 @@ import { connect, filter, mergeMap, takeUntil } from "rxjs/operators";
 import { IObserveElementChange } from "../observable/observe-query-selector";
 import { IObservedElementsChanges } from "../observable/observe-query-selector-all";
 
-export interface IMapElementChangeOptions {
+export interface IMergeMapElementChangeOptions {
     /**
      * If the `isTakeUntilRemoved` parameter is equal to the `true` value,
      * then each thread will be interrupted after the element is removed.
@@ -28,7 +28,7 @@ function assuredArray<T>(values?: T | T[]): T[] {
 /** Conversion operator to a new stream for each new added element */
 export function mergeMapAddedElements<T extends Element, O extends ObservableInput<any>>(
     project: (element: T) => O,
-    options?: IMapElementChangeOptions,
+    options?: IMergeMapElementChangeOptions,
 ): OperatorFunction<
     IObservedElementsChanges<T> | IObserveElementChange<T>,
     ObservedValueOf<O>
