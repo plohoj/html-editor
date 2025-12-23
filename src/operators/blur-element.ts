@@ -1,5 +1,4 @@
-import { MonoTypeOperatorFunction } from "rxjs";
-import { tap } from "rxjs/operators";
+import { MonoTypeOperatorFunction, tap } from "rxjs";
 
 function blurElementImmediately(element: Element): void {
     if ('blur' in element) {

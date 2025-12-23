@@ -1,5 +1,4 @@
-import { MonoTypeOperatorFunction } from "rxjs";
-import { tap } from "rxjs/operators";
+import { MonoTypeOperatorFunction, tap } from "rxjs";
 
 function clickElementImmediately(element: Element): void {
     if ('click' in element) {

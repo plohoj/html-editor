@@ -1,5 +1,4 @@
-import { MonoTypeOperatorFunction } from "rxjs";
-import { tap } from "rxjs/operators";
+import { MonoTypeOperatorFunction, tap } from "rxjs";
 
 export function removeElement<T extends Element>(): MonoTypeOperatorFunction<T> {
     return tap((element) => {

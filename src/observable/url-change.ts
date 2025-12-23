@@ -1,5 +1,4 @@
-import { Observable, Subscriber } from "rxjs";
-import { distinctUntilChanged, shareReplay } from "rxjs/operators";
+import { Observable, Subscriber, distinctUntilChanged, shareReplay } from "rxjs";
 
 let pushStateSubscriber$: Subscriber<string> | undefined;
 let isPushStateWasInjected = false;

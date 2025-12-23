@@ -1,5 +1,4 @@
-import { MonoTypeOperatorFunction } from "rxjs";
-import { tap } from "rxjs/operators";
+import { MonoTypeOperatorFunction, tap } from "rxjs";
 
 function focusElementImmediately(element: Element): void {
     if ('focus' in element) {

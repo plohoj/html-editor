@@ -1,5 +1,4 @@
-import { fromEvent, merge, Observable } from 'rxjs';
-import { filter, map, tap } from 'rxjs/operators';
+import { filter, fromEvent, map, merge, Observable, tap } from 'rxjs';
 import { HasEventTargetAddRemove } from 'rxjs/internal/observable/fromEvent';
 
 export interface IObservePressedKeyboardButtonsOptions {

@@ -1,5 +1,4 @@
-import { Observable } from "rxjs";
-import { debounceTime, filter, map, take } from "rxjs/operators";
+import { Observable, debounceTime, filter, map, take } from "rxjs";
 import { IAwaitElementOptions } from './await-element';
 import { observeQuerySelectorAll } from './observe-query-selector-all';
 
@@ -8,13 +7,32 @@ import { observeQuerySelectorAll } from './observe-query-selector-all';
  * The stream ends after any element is found / added.
  */
 export function awaitElements<T extends Element = Element>(
-    query: string,
-    options: IAwaitElementOptions<T> = {},
+  options: IAwaitElementOptions<T>,
+): Observable<T[]>;
+export function awaitElements<T extends Element = Element>(
+  query: string,
+  options?: Omit<IAwaitElementOptions<T>, 'query'>,
+): Observable<T[]>;
+export function awaitElements<T extends Element = Element>(
+  queryOrOptions: string | IAwaitElementOptions<T>,
+  options?: Omit<IAwaitElementOptions<T>, 'query'>,
 ): Observable<T[]> {
-    return observeQuerySelectorAll<T>(query, options).pipe(
-        debounceTime(options.debounceTime || 0, options.debounceScheduler),
-        filter(changes => !!changes.target),
-        map(changes => changes.target),
-        take(1),
-    );
+  // #region Options parsing
+  let query: string;
+  let stableOptions: Omit<IAwaitElementOptions<T>, 'query'>;
+  if (typeof queryOrOptions === 'string') {
+    query = queryOrOptions;
+    stableOptions = options || {};
+  } else {
+    stableOptions = queryOrOptions;
+    query = queryOrOptions.query;
+  }
+  // #endregion
+
+  return observeQuerySelectorAll<T>(query, stableOptions).pipe(
+    debounceTime(stableOptions.debounceTime || 0, stableOptions.debounceScheduler),
+    filter(changes => !!changes.target),
+    map(changes => changes.target),
+    take(1),
+  );
 }
