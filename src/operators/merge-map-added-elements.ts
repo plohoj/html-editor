@@ -1,6 +1,6 @@
 import { connect, EMPTY, filter, merge, mergeMap, Observable, OperatorFunction, takeUntil } from "rxjs";
-import type { IObservedElementChange } from "../observable/observe-query-selector";
-import type { IObservedElementsChanges } from "../observable/observe-query-selector-all";
+import type { observeQuerySelector, IObservedElementChange, IObserveQuerySelectorOptions } from "../observable/observe-query-selector";
+import type { observeQuerySelectorAll, IObservedElementsChanges } from "../observable/observe-query-selector-all";
 
 export interface IMergeMapElementChangeOptions<E extends Element = Element, O = unknown> {
     /**
@@ -29,7 +29,12 @@ function assuredArray<T>(values?: T | T[]): T[] {
   return [];
 }
 
-/** Conversion operator to a new stream for each new added element */
+/**
+ * Conversion operator to a new stream for each new added element.
+ * 
+ * It can be more convenient to use the {@link IObserveQuerySelectorOptions.project | project} option in
+ * {@link observeQuerySelectorAll} and {@link observeQuerySelector} functions.
+ */
 export function mergeMapAddedElements<E extends Element, O = unknown>(
   options: IMergeMapElementChangeOptions<E, O>,
 ): OperatorFunction<IObservedElementsChanges<E> | IObservedElementChange<E>, O>;

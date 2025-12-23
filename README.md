@@ -1,43 +1,42 @@
 # HTML editor
-**`html-editor`** it's a tool for helping modification html elements
+**`html-editor`** it's a set of tools that helps find and modify HTML elements in the Rx stream. Useful for browser extensions and userscripts.
 
 ## Table of contents
 * [Observables](#observables)
-    * [observeElementMutation](#observe-element-mutation)
-    * [observeQuerySelector](#observe-query-selector)
-    * [observeQuerySelectorAll](#observe-query-selector-all)
-    * [awaitElement](#await-element)
-    * [awaitRandomElement](#await-random-element)
-    * [urlChange$](#url-change)
+    * [`observeElementMutation`](#observeElementMutation)
+    * [`observeQuerySelector`](#observeQuerySelector)
+    * [`observeQuerySelectorAll`](#observeQuerySelectorAll)
+    * [`awaitElement`](#awaitElement)
+    * [`awaitRandomElement`](#awaitRandomElement)
+    * [`urlChange$`](#urlChange)
+    * [`observeUrlChanges`](#observeUrlChanges)
 * [Operators](#operators)
-    * [mergeMapAddedElements](#merge-map-added-elements)
-    * [mergeMapStringToggle](#merge-map-string-toggle)
+    * [`mergeMapAddedElements`](#mergeMapAddedElements)
+    * [`mergeMapStringCondition`](#mergeMapStringCondition)
 
 # <a name="observables"></a> Observables
-## <a name="observe-element-mutation"></a> `observeElementMutation`
+## <a name="observeElementMutation"></a> `observeElementMutation`
 Converts the callback of the MutationObserver class to an Rx event stream.
 
 Example:
 ```ts
 observeElementMutation(
-    document.querySelector('#my-element'),
-    { attributeFilter: ['data-my-data'] },
+  document.querySelector('#my-element')!,
+  { attributeFilter: ['data-my-data'] },
 ).subscribe(console.log);
 ```
 
-## <a name="observe-query-selector"></a> `observeQuerySelector`
-Returns change (addition and deletion) of element that match selectors, like an Rx stream.
+## <a name="observeQuerySelector"></a> `observeQuerySelector`
+Observation changes (addition and deletion) of elements that match to query selectors as an Rx stream.
 
 Example:
 ```ts
-observeQuerySelector(
-    '.my-child',
-    {
-        parent: document.querySelector('#my-parent'),
-        has: '.my-sub-child',
-        filter: element => element.classList.contains('.my-child-modifier'),
-    }
-).subscribe(console.log);
+observeQuerySelector({
+  query: '.my-child',
+  parent: document.querySelector('#my-parent')!,
+  has: '.my-sub-child',
+  filter: element => element.classList.contains('.my-child-modifier'),
+}).subscribe(console.log);
 ```
 Example log:
 ```ts
@@ -45,19 +44,17 @@ Example log:
 {added: undefined, target: undefined, removed: Element};
 ```
 
-## <a name="observe-query-selector-all"></a> `observeQuerySelectorAll`
-Returns changes (additions and deletions) of elements that match selectors, like an Rx stream.
+## <a name="observeQuerySelectorAll"></a> `observeQuerySelectorAll`
+Observation changes (additions and deletions) of elements that match to query selectors as an Rx stream.
 
 Example:
 ```ts
-observeQuerySelectorAll(
-    '.my-child',
-    {
-        parent: document.querySelector('#my-parent'),
-        has: '.my-sub-child',
-        filter: element => element.classList.contains('.my-child-modifier'),
-    }
-).subscribe(console.log);
+observeQuerySelectorAll({
+  query: '.my-child',
+  parent: document.querySelector('#my-parent')!,
+  has: '.my-sub-child',
+  filter: element => element.classList.contains('.my-child-modifier'),
+}).subscribe(console.log);
 ```
 Example log:
 ```ts
@@ -65,59 +62,76 @@ Example log:
 {added: [], target: [Element], removed: [Element]};
 ```
 
-## <a name="await-element"></a> `awaitElement`
+## <a name="awaitElement"></a> `awaitElement`
 Awaiting only one element to match the selector and returns it as an Rx stream. The stream ends immediately after one element is found / added.
 
 Example:
 ```ts
 awaitElement('#my-element')
-    .subscribe(console.log);
+  .subscribe(console.log);
 ```
 
-## <a name="await-random-element"></a> `awaitRandomElement`
+## <a name="awaitRandomElement"></a> `awaitRandomElement`
 Awaiting Expects at least one element to match the selector and returns it as an Rx stream. If there are more than 1 elements, it will return a random one. The stream ends immediately after the elements are found / added.
 
 Example:
 ```ts
 awaitRandomElement('.my-element')
-    .subscribe(console.log);
+  .subscribe(console.log);
 ```
 
-## <a name="url-change"></a> `urlChange$`
-Emit new location url when the URL is changes
+## <a name="urlChange"></a> `urlChange$`
+Emit new location url when the URL is changes.
 
 Example:
 ```ts
 urlChange$.subscribe(console.log);
 ```
 
-# <a name="operators"></a> Operators
-
-## <a name="merge-map-added-elements"></a> `mergeMapAddedElements`
-Conversion operator to a new stream for each new added element
+## <a name="observeUrlChanges"></a> `observeUrlChanges`
+Observation of `URL` changes that satisfy the conditions.
 
 Example:
 ```ts
-observeQuerySelectorAll('.my-button')
-    .pipe(
-        mergeMapAddedElements(
-            element => fromEvent(element, 'click'),
-            { isTakeUntilRemoved: true }
-        )
-    ).subscribe(console.log);
+observeUrlChanges({ condition: /my-url-segment/ })
+  .subscribe(console.log);
 ```
 
-## <a name="merge-map-string-toggle"></a> `mergeMapStringToggle`
+# <a name="operators"></a> Operators
+
+## <a name="mergeMapAddedElements"></a> `mergeMapAddedElements`
+Conversion operator to a new stream for each new added element.
+
+Example:
+```ts
+observeQuerySelectorAll('.my-button').pipe(
+  mergeMapAddedElements(element => fromEvent(element, 'click'))
+).subscribe(console.log);
+```
+It can be more convenient to use the `project` option in [`observeQuerySelector`](#observeQuerySelector) and [`observeQuerySelectorAll`](#observeQuerySelectorAll) functions. Example:
+```ts
+observeQuerySelectorAll({
+  query: '.my-button',
+  project: element => fromEvent(element, 'click'),
+}).subscribe(console.log);
+```
+
+## <a name="mergeMapStringCondition"></a> `mergeMapStringCondition`
 The operator creates a separate stream when the source string is validated.
 
 Example:
 ```ts
-urlChange$
-    .pipe(
-        mergeMapStringToggle(
-            /my-url-segment/,
-            () => observeQuerySelectorAll('.my-element'),
-            { isTakeUntilToggle: true },
-        )
-    ).subscribe(console.log);
+urlChange$.pipe(
+  mergeMapStringCondition(
+    /my-url-segment/,
+    () => observeQuerySelectorAll('.my-element'),
+  )
+).subscribe(console.log);
+```
+It can be more convenient to use the `project` option in observeUrlChanges function. Example:
+```ts
+observeUrlChanges({
+  condition: /my-url-segment/,
+  project: () => observeQuerySelectorAll('.my-element')
+}).subscribe(console.log);
 ```

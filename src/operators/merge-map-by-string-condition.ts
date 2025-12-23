@@ -1,5 +1,6 @@
 import { Observable, OperatorFunction } from "rxjs";
 import { IMergeMapByConditionOptions, mergeMapByCondition } from './merge-map-by-condition';
+import type { IObserveUrlChangesOptions, observeUrlChanges } from '../observable/observe-url-changes';
 
 export interface IMergeMapByStringConditionOptions<O = unknown>
   extends Omit<IMergeMapByConditionOptions<string, O>, 'condition'> {
@@ -14,7 +15,12 @@ export function getStringConditionFunction(
   return typeof condition === 'function' ? condition : (value: string) => condition.test(value);
 }
 
-/** The operator creates a separate stream when the source string is validated. */
+/**
+ * The operator creates a separate stream when the source string is validated.
+ * 
+ * It can be more convenient to use the {@link IObserveUrlChangesOptions.project | project} option in
+ * {@link observeUrlChanges} function.
+ */
 export function mergeMapStringCondition(
   options: IMergeMapByStringConditionOptions & { project?: undefined },
 ): OperatorFunction<string, string>;
