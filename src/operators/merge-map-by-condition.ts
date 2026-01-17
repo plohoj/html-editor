@@ -76,7 +76,7 @@ export function mergeMapByCondition<I, O>(
       let takeUntil$: Observable<unknown> | undefined;
       if (takeUntilOption === 'fail') {
         takeUntil$ = connectedSource$.pipe(
-          filter(({ isConditionPassed }) => isConditionPassed)
+          filter(({ isConditionPassed }) => !isConditionPassed)
         );
       } else if (takeUntilOption === 'pass') {
         let wasFailed = false
