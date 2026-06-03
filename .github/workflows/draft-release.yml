@@ -10,9 +10,9 @@ jobs:
 
     steps:
     - name: Checkout to commit
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
     - name: Set up node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v6
     - name: Get version from package.json
       run: echo "version=$(node -pe "require('./package.json').version")" >> $GITHUB_OUTPUT
       id: get_version

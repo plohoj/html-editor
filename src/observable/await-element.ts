@@ -1,5 +1,5 @@
 import { Observable, SchedulerLike, debounceTime, filter, map, take } from "rxjs";
-import { IObserveQuerySelectorBaseOptions, observeQuerySelector } from "./observe-query-selector";
+import { IObserveQuerySelectorBaseOptions, observeQuerySelector, QuerySelectorQueryFn } from "./observe-query-selector";
 
 export interface IAwaitElementOptions<T extends Element = Element> extends IObserveQuerySelectorBaseOptions<T> {
   /**
@@ -15,30 +15,25 @@ export interface IAwaitElementOptions<T extends Element = Element> extends IObse
  * Awaiting only one element to match the selector and returns it as an Rx stream.
  * The stream ends after one element is found / added.
  */
-export function awaitElement<T extends Element = Element>(
-  options: IAwaitElementOptions<T>,
-): Observable<T>;
-export function awaitElement<T extends Element = Element>(
-  query: string,
-  options?: Omit<IAwaitElementOptions<T>, 'query'>,
-): Observable<T>;
-export function awaitElement<T extends Element = Element>(
-  queryOrOptions: string | IAwaitElementOptions<T>,
-  options?: Omit<IAwaitElementOptions<T>, 'query'>,
-): Observable<T> {
+export function awaitElement<E extends Element = Element>(
+  options: IAwaitElementOptions<E>,
+): Observable<E>;
+export function awaitElement<E extends Element = Element>(
+  query: string | QuerySelectorQueryFn<E>,
+  options?: Omit<IAwaitElementOptions<E>, 'query'>,
+): Observable<E>;
+export function awaitElement<E extends Element = Element>(
+  queryOrOptions: string | QuerySelectorQueryFn<E> | IAwaitElementOptions<E>,
+  options?: Omit<IAwaitElementOptions<E>, 'query'>,
+): Observable<E> {
   // #region Options parsing
-  let query: string;
-  let stableOptions: Omit<IAwaitElementOptions<T>, 'query'>;
-  if (typeof queryOrOptions === 'string') {
-    query = queryOrOptions;
-    stableOptions = options || {};
-  } else {
-    stableOptions = queryOrOptions;
-    query = queryOrOptions.query;
-  }
+  const stableOptions: Omit<IAwaitElementOptions<E>, 'query'>
+    = typeof queryOrOptions === 'string' || typeof queryOrOptions === 'function'
+      ? options || {}
+      : queryOrOptions
   // #endregion
 
-  return observeQuerySelector<T>(query, stableOptions).pipe(
+  return observeQuerySelector<E>(queryOrOptions as string, options).pipe(
     debounceTime(stableOptions.debounceTime || 0, stableOptions.debounceScheduler),
     filter(changes => !!changes.target),
     map(changes => changes.target!),

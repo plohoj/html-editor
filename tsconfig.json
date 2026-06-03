@@ -1,14 +1,15 @@
 {
-    "compilerOptions": {
-        "module": "ESNext",
-        "target": "ES2015",
-        "moduleResolution": "Node",
-        "strict": true,
-        "importHelpers": true,
-    },
-    "exclude": [
-        "node_modules",
-        ".history/",
-        "dist/"
-    ],
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ES2015",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "importHelpers": true,
+    "rootDir": "./src"
+  },
+  "exclude": [
+    "node_modules",
+    ".history/",
+    "dist/"
+  ],
 }

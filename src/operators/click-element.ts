@@ -6,7 +6,6 @@ function clickElementImmediately(element: Element): void {
     } else {
         element.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     }
-    console.log(`Click: `, element);
 }
 
 export function clickElement<T extends Element>(): MonoTypeOperatorFunction<T>;

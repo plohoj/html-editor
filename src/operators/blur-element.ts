@@ -7,7 +7,6 @@ function blurElementImmediately(element: Element): void {
         element.dispatchEvent(new FocusEvent('blur'));
         element.dispatchEvent(new FocusEvent('focusout', {bubbles: true}));
     }
-    console.log(`Blur: `, element);
 }
 
 export function blurElement<T extends Element>(): MonoTypeOperatorFunction<T>;

@@ -7,7 +7,6 @@ function focusElementImmediately(element: Element): void {
         element.dispatchEvent(new FocusEvent('focus'));
         element.dispatchEvent(new FocusEvent('focusin', {bubbles: true}));
     }
-    console.log(`Focus: `, element);
 }
 
 export function focusElement<T extends Element>(): MonoTypeOperatorFunction<T>;

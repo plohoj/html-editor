@@ -4,7 +4,6 @@ function setInputValueImmediately(element: HTMLInputElement, value: string): voi
     element.value = value;
     element.focus();
     element.dispatchEvent(new Event('input'));
-    console.log(`Set value: `, { element, value });
 }
 
 export function setInputValue(value: string): MonoTypeOperatorFunction<HTMLInputElement>;

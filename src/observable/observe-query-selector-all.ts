@@ -1,17 +1,63 @@
 
 import { concat, defer, distinctUntilChanged, EMPTY, mergeMap, Observable, of, switchMap, throttleTime } from "rxjs";
 import { mergeMapAddedElements } from '../operators/merge-map-added-elements';
-import { trueStub } from '../utils/stubs';
 import { observeElementMutation } from "./observe-mutation";
-import { IObserveQuerySelectorOptions } from "./observe-query-selector";
+import { IObserveQuerySelectorOptions, QuerySelectorQueryFn } from "./observe-query-selector";
 
-export interface IObservedElementsChanges<T extends Element = Element> {
+export interface IObservedElementsChanges<E extends Element = Element> {
   /** All elements that satisfy the filtering condition. */
-  target: T[];
+  target: E[];
   /** New elements that have been added since the last emit. */
-  added: T[];
+  added: E[];
   /** Elements that have been removed since the last emit. */
-  removed: T[];
+  removed: E[];
+}
+
+type WrappedQueryAllFn<E extends Element = Element> = (parent: Element) => E[] | NodeListOf<E>;
+function wrapQueryAllFn<E extends Element = Element>(
+  query: string | QuerySelectorQueryFn<E>,
+  {filter, has}: Pick<IObserveQuerySelectorOptions<E>, 'filter' | 'has'>
+): WrappedQueryAllFn<E> {
+  type FullFilterFn = (element: E) => boolean | Element | null;
+
+  const wrappedFilter: FullFilterFn | null
+    = filter
+      ? has
+        ? element => filter(element) && element.querySelector(has)
+        : filter
+      : null;
+
+  if (typeof query === 'string') {
+    return wrappedFilter
+      ? parent => [...parent.querySelectorAll<E>(query)].filter(wrappedFilter)
+      : parent => parent.querySelectorAll<E>(query);
+  } else {
+    if (wrappedFilter) {
+      return parent => {
+        const result = query(parent);
+        if (!result) {
+          return [];
+        }
+        if (result instanceof Node) {
+          return wrappedFilter(result)
+            ? [result]
+            : [];
+        }
+        return result instanceof Array
+          ? result.filter(wrappedFilter)
+          : [...result].filter(wrappedFilter);
+      };
+    }
+    return parent => {
+      const result = query(parent);
+      if (!result) {
+        return [];
+      }
+      return result instanceof Node
+        ? [result]
+        : result;
+    };
+  }
 }
 
 /** Observation changes (additions and deletions) of elements that match to query selectors as an Rx stream. */
@@ -22,29 +68,28 @@ export function observeQuerySelectorAll<E extends Element = Element, O = unknown
   options: IObserveQuerySelectorOptions<E, O>,
 ): Observable<O>;
 export function observeQuerySelectorAll<E extends Element = Element>(
-  query: string,
+  query: string | QuerySelectorQueryFn<E>,
   options?: Omit<IObserveQuerySelectorOptions<E, unknown>, 'query'> & { project?: undefined },
 ): Observable<IObservedElementsChanges<E>>;
 export function observeQuerySelectorAll<E extends Element = Element, O = unknown>(
-  query: string,
+  query: string | QuerySelectorQueryFn<E>,
   options: Omit<IObserveQuerySelectorOptions<E, O>, 'query'>,
 ): Observable<O>;
 export function observeQuerySelectorAll<E extends Element = Element, O = unknown>(
-  query: string,
+  query: string | QuerySelectorQueryFn<E>,
   project: ((element: E) => Observable<O>),
   options: Omit<IObserveQuerySelectorOptions<E>, 'query' | 'project'>,
 ): Observable<O>;
 export function observeQuerySelectorAll<E extends Element = Element, O = unknown>(
-  queryOrOptions: string | IObserveQuerySelectorOptions<E, O>,
+  queryOrOptions: string | QuerySelectorQueryFn<E> | IObserveQuerySelectorOptions<E, O>,
   projectOrOptions?: ((element: E) => Observable<O>) | Omit<IObserveQuerySelectorOptions<E, O>, 'query'>,
   options?: Omit<IObserveQuerySelectorOptions<E>, 'query' | 'project'>
 ): Observable<IObservedElementsChanges<E> | O> {
   // #region Options parsing
-  let query: string;
+  let wrappedQueryFn: WrappedQueryAllFn<E>;
   let project: ((element: E) => Observable<O>) | undefined;
   let stableOptions: Omit<IObserveQuerySelectorOptions<E>, 'query' | 'project'>;
-  if (typeof queryOrOptions === 'string') {
-    query = queryOrOptions;
+  if (typeof queryOrOptions === 'string' || typeof queryOrOptions === 'function') {
     if (typeof projectOrOptions === 'function') {
       project = projectOrOptions;
       stableOptions = options || {};
@@ -52,16 +97,15 @@ export function observeQuerySelectorAll<E extends Element = Element, O = unknown
       stableOptions = projectOrOptions || {};
       project = projectOrOptions?.project;
     }
+    wrappedQueryFn = wrapQueryAllFn(queryOrOptions, stableOptions);;
   } else {
     stableOptions = queryOrOptions;
-    query = queryOrOptions.query;
+    wrappedQueryFn = wrapQueryAllFn(queryOrOptions.query, stableOptions);
     project = queryOrOptions?.project;
   }
   const {
     parent = document.documentElement,
     asRemovedWhen,
-    filter = trueStub,
-    has,
     tap,
     ...restOfStableOptions
   } = stableOptions;
@@ -72,16 +116,9 @@ export function observeQuerySelectorAll<E extends Element = Element, O = unknown
   function checkChanges(): Observable<IObservedElementsChanges<E>> {
     const addedElements = new Set<E>();
     const targetElementsDiff = new Set(targetElements);
-    const querySelectedElements = new Set(parent.querySelectorAll<E>(query));
+    const querySelectedElements = new Set(wrappedQueryFn(parent));
 
     for (const querySelectedElement of querySelectedElements) {
-      if (has && !querySelectedElement.querySelector(has)) {
-        continue;
-      }
-      if (!filter(querySelectedElement)) {
-        continue;
-      }
-
       if (targetElementsDiff.has(querySelectedElement)) {
         targetElementsDiff.delete(querySelectedElement);
       } else {
